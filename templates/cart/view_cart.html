@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load mathfilters %}
+
+
+{% block content %}
+    <div class="container mt-5">
+        <h2 class="mb-4">Mi Carrito</h2>
+        
+        {% if cart_items %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Precio</th>
+                            <th>Total</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart_items %}
+                            <tr id="cart-item-{{ item.id }}">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-fluid" style="max-width: 50px;">
+                                        <span class="ms-2">{{ item.product.name }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <form method="post" action="{% url 'update_cart' item.id %}" class="d-inline" hx-post="{% url 'update_cart' item.id %}" hx-target="#cart-item-{{ item.id }}">
+                                        {% csrf_token %}
+                                        <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="form-control" style="width: 80px;">
+                                        <button type="submit" class="btn btn-sm btn-primary mt-2">Actualizar</button>
+                                    </form>
+                                </td>
+                                <td>
+                                    RD$ {{ item.product.price }}
+                                </td>
+                                <td>
+                                    RD$ {{ item.product.price|mul:item.quantity }}
+                                </td>
+                                <td>
+                                    <form method="post" action="{% url 'remove_from_cart' item.id %}" class="d-inline" hx-post="{% url 'remove_from_cart' item.id %}" hx-target="#cart-item-{{ item.id }}" hx-swap="outerHTML">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Total y Botón para proceder al pago -->
+            <div class="d-flex justify-content-between mt-4">
+                <h4>Total: RD$ {{ total_amount }}</h4>
+                {% comment %} <a href="{% url 'create_checkout_session' %}" class="btn btn-success">Proceder al Pago</a> {% endcomment %}
+            </div>
+        {% else %}
+            <p>Tu carrito está vacío. ¡Agrega productos para comenzar a comprar!</p>
+        {% endif %}
+    </div>
+{% endblock %}
