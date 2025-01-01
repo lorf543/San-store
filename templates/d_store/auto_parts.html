@@ -1,0 +1,19 @@
+{% extends "base.html" %} {% block content %} 
+{% include "components/navbar.html" %}
+<section class="container">
+
+    <div class="pt-5">
+      <div class="row justify-content-center">
+        <div class="">
+          <div class="search-container">
+            <input type="text" class="form-control search-input" placeholder="Search...">
+            <i class="fas fa-search search-icon"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% include "components/articles.html" %}
+</section>
+{% endblock content %}

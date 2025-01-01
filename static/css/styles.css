@@ -13427,11 +13427,11 @@ a {
 }
 
 .container-header {
-  height: 400px;
   background-repeat: no-repeat;
   background-size: cover;
   background-position: top;
   position: relative;
+  padding: 200px;
 }
 .container-header .branding {
   position: absolute;
@@ -13448,9 +13448,7 @@ a {
 }
 @media screen and (max-width: 375px) {
   .container-header {
-    background-repeat: no-repeat;
-    background-size: 445px;
-    background-position: top;
+    padding: 75px;
   }
   .container-header .carousel-item img {
     width: 100%;
@@ -13458,7 +13456,7 @@ a {
   }
   .container-header .branding {
     position: absolute;
-    top: 11%;
+    top: 25%;
     left: 18px;
     margin: 0;
     font-size: 28px;
@@ -13476,6 +13474,65 @@ a {
   height: 568px;
   -o-object-fit: cover;
      object-fit: cover;
+}
+
+.grid-container {
+  padding-top: 8px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.grid-item {
+  background-color: #f1f1f1;
+  padding: 20px;
+  text-align: center;
+  border: 1px solid #ccc;
+  -webkit-transition: -webkit-transform 0.3s ease;
+  transition: -webkit-transform 0.3s ease;
+  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, -webkit-transform 0.3s ease; /* Añadir transición para suavizar el efecto */
+}
+.grid-item img {
+  width: 60%; /* Asegura que la imagen ocupe todo el ancho del contenedor */
+  height: 240px; /* Establece una altura fija para las imágenes */
+  -o-object-fit: cover;
+     object-fit: cover; /* Mantiene la proporción de la imagen y recorta si es necesario */
+}
+.grid-item:hover {
+  -webkit-transform: scale(1.05);
+          transform: scale(1.05); /* Aumentar el tamaño al 105% */
+}
+
+@media (max-width: 768px) {
+  .grid-container {
+    grid-template-columns: 1fr;
+  }
+}
+.search-container {
+  position: relative;
+}
+
+.search-input {
+  height: 50px;
+  border-radius: 30px;
+  padding-left: 35px;
+  border: none;
+  -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.search-icon {
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  -webkit-transform: translateY(-50%);
+          transform: translateY(-50%);
+  color: #888;
+}
+
+.filters-parts {
+  padding: 150px;
 }
 
 html, body {

@@ -1,0 +1,11 @@
+
+<div class="grid-container">
+  {% for category in categories %}
+    <div class="grid-item">
+      <a href="{% url 'parts_detail' category.slug %}">
+        <img src="{{category.image.url}}" alt="{{category.name}}" />
+        <p class="text-muted">{{category.name}}</p>
+      </a>
+    </div>
+  {% endfor %}
+</div>

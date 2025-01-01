@@ -6,17 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>San</title>
     <link rel="stylesheet" href="{% static "css/styles.css" %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   </head>
   <body class="container-page">
 
-    <main>
+
+    <main class="">
       {% block content %}
       
       {% endblock content %}
     </main>
     
     {% include "components/footer.html" %}
-
 
     <script src="{% static 'js/htmx.min.js' %}"></script>
     <script

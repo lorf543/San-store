@@ -16,65 +16,26 @@ def home(request):
 
 
 
-def car_detail(request,slug):
-    car = get_object_or_404(Car, slug = slug)
-    slug = car.slug
-    
-    context = {'car':car, 'slug':slug}
-    return render(request,'d_store/car_details.html', context)
-
-
-
-def about(request):
-    return render(request,'d_store/about.html')
-
-
-
-
-def sell_car(request, car_id):
-    car = Car.objects.get(id=car_id)
-    main_image = car.car_imange.filter(main=True).first()  
-    
-    context ={
-    'car':car,
-    'main_image':main_image
-    }
-    return render(request,'d_store/sell_car.html', context)
-
-
-
-def catetories(request):
-
+def auto_parts(request):
     categories = get_list_or_404(Category)
     
     context = {
         'categories':categories
     }
+    return render(request,'d_store/auto_parts.html',context)
 
-    return render(request,'d_store/catetories.html',context)
 
+def parts_detail(request, slug):
+    category = get_object_or_404(Category, slug=slug)
+    products = category.products_parts.all()
 
-def product_detail(request,category_id):
-
-    category = get_object_or_404(Category, id=category_id)
-    products = Product.objects.filter(category=category)
-
-    categories = Category.objects.all()
-    
     context = {
-        'categories': categories,
-        'category': category, 
-        'products': products,
+        'category': category,
+        'products': products
     }
+    return render(request, 'd_store/parts_detail.html', context)
 
-    return render(request,'d_store/parts_detail.html',context)
 
-
-def product (request, product_id):
-    product = get_object_or_404(Product,id=product_id)
-    
-    context = {'product':product }
-    return render(request,'d_store/product.html',context)
 
 
 def check_info(request):

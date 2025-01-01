@@ -17,6 +17,12 @@ TRANSMISSION_CHOICES = [
     ('CVT', 'CVT'),
 ]
 
+TYPE_OIL = [
+    ('Sintentico','Sintentico'),
+    ('Semi-sintentico','Semi-sintentico'),
+    ('Mineral','Mineral')
+]
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -32,6 +38,7 @@ class UserProfile(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=50,null=True, blank=True)
+    slug = models.SlugField(max_length=50, unique=True, null=True, blank=True)
     code = models.CharField(max_length=10, unique=True,null=True, blank=True)
     image = models.ImageField(upload_to='category_images', null=True, blank=True)
 
@@ -42,11 +49,15 @@ class Category(models.Model):
         ordering = ('id',)
         verbose_name = "Category"
         verbose_name_plural = "Categories"
-        
+               
         
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        self.code = str(uuid.uuid4().int)[-6:]
+        if not self.code:
+            self.code = str(uuid.uuid4().int)[-6:]
+
+        if not self.slug and self.name:
+            self.slug = slugify(self.name)
+
         super().save(*args, **kwargs)
 
 class Car(models.Model):
@@ -74,15 +85,43 @@ class Car(models.Model):
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=100, null=True, blank=True)
+    brand = models.CharField(max_length=100, null=True, blank=True)
+    slug = models.SlugField(max_length=100, null=True, blank=True)
+    code = models.CharField(max_length=10, unique=True,null=True, blank=True)
     stock = models.IntegerField(null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     image = models.ImageField(upload_to='part_images', null=True, blank=True)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, related_name="added_parts", null=True, blank=True)  # Relación con la categoría
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, related_name="products_parts", null=True, blank=True) 
+    
+    amp = models.CharField(max_length=50,null=True, blank=True)
+    volts = models.CharField(max_length=50,null=True, blank=True)
+    
+    psi = models.CharField(max_length=50,null=True, blank=True)
+    
+    type_oild = models.CharField(max_length=50,null=True, blank=True, choices=TYPE_OIL)
+    viscosity = models.CharField(max_length=50,null=True, blank=True)
+        
+    date_added = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    date_modified = models.DateTimeField(auto_now=True, null=True, blank=True)
+    
+    
     
     def __str__(self):
-        return self.name
+        return self.brand
+    
+    def save(self, *args, **kwargs):
+        if not self.code:
+            self.code = str(uuid.uuid4().int)[-6:]
+            
+        if not self.slug:
+            self.slug = slugify(f"{self.brand}-{self.price}")
+        
+        self.name = f"{self.brand} - {self.price}"        
+        super().save(*args, **kwargs)
+        
+    
+
     
     
     
