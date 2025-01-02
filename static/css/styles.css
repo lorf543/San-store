@@ -13535,6 +13535,71 @@ a {
   padding: 150px;
 }
 
+.grid-product {
+  width: 100%;
+  padding-top: 8px;
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 10px;
+}
+
+.product-filters {
+  border-right: 4px solid rgba(0, 0, 0, 0.482);
+  margin-right: 62px;
+  margin-top: 25px;
+  width: 50%;
+}
+
+.product-item {
+  background-color: #f1f1f1;
+  -webkit-transition: -webkit-transform 0.3s ease;
+  transition: -webkit-transform 0.3s ease;
+  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, -webkit-transform 0.3s ease;
+  width: 100%;
+  cursor: pointer;
+  padding: 10px;
+}
+.product-item .product-layout {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+.product-item:hover {
+  -webkit-transform: scale(1.05);
+          transform: scale(1.05); /* Aumentar el tamaño al 105% */
+}
+.product-item img {
+  width: 200px; /* Ajusta el ancho según tus necesidades */
+  height: 200px; /* Ajusta el alto según tus necesidades */
+  -o-object-fit: cover;
+     object-fit: cover; /* Asegura que la imagen se ajuste al tamaño establecido */
+}
+.product-item .product-description {
+  height: 150px; /* Ajusta el alto según tus necesidades */
+  overflow: hidden; /* Oculta cualquier contenido que sobrepase el tamaño establecido */
+}
+
+@media (max-width: 768px) {
+  .grid-container {
+    grid-template-columns: 1fr;
+  }
+  .product-item img {
+    width: 125px;
+    height: 125px;
+    -o-object-fit: cover;
+       object-fit: cover; /* Asegura que la imagen se ajuste al tamaño establecido */
+  }
+  .product-filters {
+    border: 0;
+  }
+}
 html, body {
   height: 100%; /* Asegúrate de que el html y el body ocupen toda la altura */
   margin: 0; /* Elimina el margen por defecto */
@@ -13562,4 +13627,8 @@ footer {
   color: white; /* Color del texto del footer */
   text-align: center; /* Centra el texto */
   padding: 10px; /* Espaciado interno */
+}
+
+.lh {
+  line-height: 0px;
 }

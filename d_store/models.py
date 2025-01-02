@@ -3,6 +3,7 @@ from django.db import models
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
 import uuid
+from django.contrib.auth.models import User
 
 FUEL_CHOICES = [
     ('Gasolina', 'Gasolina'),
@@ -110,6 +111,17 @@ class Product(models.Model):
     def __str__(self):
         return self.brand
     
+    def get_batery_info(self):
+        info = f"{self.brand} {self.volts}  {self.amp}"
+        return info
+    
+    
+    def get_product_image(self):
+        if self.image is None:
+            return 'https://via.placeholder.com/240x240'
+        else:
+            return self.image.url
+        
     def save(self, *args, **kwargs):
         if not self.code:
             self.code = str(uuid.uuid4().int)[-6:]
@@ -120,7 +132,16 @@ class Product(models.Model):
         self.name = f"{self.brand} - {self.price}"        
         super().save(*args, **kwargs)
         
-    
+        
+        
+class CartItem(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="cart_items")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    date_added = models.DateTimeField(auto_now_add=True)
+
+    def get_total_price(self):
+        return self.product.price * self.quantity  
 
     
     
