@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import UserProfile, Category, Car, CarImages,Product
+from .models import UserProfile, Category, Car, CarImages,Product, CartItem
 
  
 class ImageInline(admin.TabularInline):
@@ -17,6 +17,7 @@ admin.site.register(Car,CarAdmin)
 admin.site.register(Category)
 admin.site.register(UserProfile)
 admin.site.register(Product)
+admin.site.register(CartItem)
 
 
     

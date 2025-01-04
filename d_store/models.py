@@ -140,8 +140,19 @@ class CartItem(models.Model):
     quantity = models.PositiveIntegerField(default=1)
     date_added = models.DateTimeField(auto_now_add=True)
 
+
+    
+    def __str__(self):
+        return f"{self.product.brand} - {self.product.category.name} - {self.quantity}" 
+    
     def get_total_price(self):
         return self.product.price * self.quantity  
+    
+    def get_quantity_minus_one(self):
+        return self.quantity - 1
+
+    def get_quantity_plus_one(self):
+        return self.quantity + 1
 
     
     

@@ -2,6 +2,7 @@ from django.shortcuts import render,get_list_or_404,get_object_or_404,redirect,H
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.conf import settings
@@ -28,7 +29,7 @@ def auto_parts(request):
     categories = get_list_or_404(Category)
     
     context = {
-        'categories':categories
+        'categories':categories,
     }
     return render(request,'d_store/auto_parts.html',context)
 
@@ -39,22 +40,61 @@ def parts_detail(request, slug):
 
     context = {
         'category': category,
-        'products': products
+        'products': products,
     }
+    
     return render(request, 'd_store/parts_detail.html', context)
 
 
+@ensure_csrf_cookie
 @login_required
 def view_cart(request):
     cart_items = request.user.cart_items.all()
     total_price = sum(item.get_total_price() for item in cart_items)
+    cart_count = CartItem.objects.filter(user=request.user).count()
+
     context = {
         'cart_items': cart_items,
-        'total_price': total_price
+        'total_price': total_price,
+        'cart_count': cart_count
     }
-    return render(request, 'd_store/cart.html', context)
+    return render(request, 'partials/view_cart.html', context)
 
 
+@login_required
+def update_cart_htmx(request, pk):
+    cart_item = get_object_or_404(CartItem, pk=pk)
+
+    # Validar el dato recibido
+    try:
+        quantity = int(request.POST.get('quantity', 0))
+    except ValueError:
+        return HttpResponse("Cantidad no válida", status=400)
+
+    if quantity < 1:
+        cart_item.delete()
+    else:
+        cart_item.quantity = quantity
+        cart_item.save()
+
+    # Filtrar los artículos del carrito del usuario actual
+    cart_items = CartItem.objects.filter(user=request.user)
+    total_price = sum(item.get_total_price() for item in cart_items)
+
+    # Inspeccionar la cabecera de htmx
+    hx_target = request.META.get('HTTP_HX_TARGET', '')
+
+    # Renderizar respuesta según el objetivo de htmx
+    if hx_target == "cart-items":
+        cart_items_html = render_to_string('partials/cart_items_partial.html', {'cart_items': cart_items})
+        return HttpResponse(cart_items_html)
+    elif hx_target == "cart-total":
+        total_html = f"${total_price:.2f}"
+        return HttpResponse(total_html)
+
+    # Respuesta por defecto
+    return HttpResponse(status=204)
+    
 @login_required
 def add_to_cart_htmx(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -62,16 +102,19 @@ def add_to_cart_htmx(request, product_id):
     if not created:
         cart_item.quantity += 1
         cart_item.save()
-    
-    # Render partial HTML response
+
     cart_items = request.user.cart_items.all()
     total_price = sum(item.get_total_price() for item in cart_items)
-    cart_html = render_to_string('d_store/cart_items_partial.html', {'cart_items': cart_items})
-    total_price_html = render_to_string('d_store/cart_total_partial.html', {'total_price': total_price})
-    
+    cart_count = cart_items.count()
+
+    cart_html = render_to_string('partials/cart_items.html', {'cart_items': cart_items})
+    total_html = render_to_string('partials/cart_total.html', {'total_price': total_price})
+    count_html = render_to_string('partials/cart_count.html', {'cart_count': cart_count})
+
     return JsonResponse({
         'cart_html': cart_html,
-        'total_price_html': total_price_html
+        'total_html': total_html,
+        'count_html': count_html,
     })
 
 @login_required
@@ -79,15 +122,18 @@ def remove_from_cart_htmx(request, cart_item_id):
     cart_item = get_object_or_404(CartItem, id=cart_item_id, user=request.user)
     cart_item.delete()
 
-    # Render updated cart
     cart_items = request.user.cart_items.all()
     total_price = sum(item.get_total_price() for item in cart_items)
-    cart_html = render_to_string('cart/cart_items_partial.html', {'cart_items': cart_items})
-    total_price_html = render_to_string('cart/cart_total_partial.html', {'total_price': total_price})
-    
+    cart_count = cart_items.count()
+
+    cart_html = render_to_string('partials/cart_items.html', {'cart_items': cart_items})
+    total_html = render_to_string('partials/cart_total.html', {'total_price': total_price})
+    count_html = render_to_string('partials/cart_count.html', {'cart_count': cart_count})
+
     return JsonResponse({
         'cart_html': cart_html,
-        'total_price_html': total_price_html
+        'total_html': total_html,
+        'count_html': count_html,
     })
 
 @login_required

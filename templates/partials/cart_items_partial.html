@@ -1,0 +1,71 @@
+<style>.list-group-item {
+  padding: 15px;
+  border-bottom: 1px solid #ccc;
+}
+
+.list-group-item:last-child {
+  border-bottom: none;
+}
+
+.list-group-item .font-weight-bold {
+  font-size: 16px;
+}
+
+.list-group-item .text-muted {
+  font-size: 14px;
+}
+
+.list-group-item .text-success {
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  .list-group-item {
+    padding: 10px;
+  }
+  .list-group-item .font-weight-bold {
+    font-size: 14px;
+  }
+  .list-group-item .text-muted {
+    font-size: 12px;
+  }
+  .list-group-item .text-success {
+    font-size: 14px;
+  }
+}</style>
+
+<ul class="list-group list-group-flush">
+  {% for item in cart_items %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span class="font-weight-bold ">{{ item.product.brand }}</span>
+      <span class="text-muted ">${{ item.product.price }}</span>
+      <span class="font-weight-bold text-success">${{ item.get_total_price }}</span>
+      <div class="d-flex align-items-center">
+      <button
+        class="btn btn-secondary btn-sm"
+        hx-post="{% url 'update_cart_htmx' item.id %}"
+        hx-target="#cart-items"
+        hx-swap="innerHTML"
+        hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+        hx-vals='{"quantity": "{{ item.get_quantity_minus_one }}"}'>
+        -
+      </button>
+    <span class="mx-2">{{ item.quantity }}</span>
+    <button
+      class="btn btn-secondary btn-sm"
+      hx-post="{% url 'update_cart_htmx' item.id %}"
+      hx-target="#cart-items"
+      hx-swap="innerHTML"
+      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+      hx-vals='{"quantity": "{{ item.get_quantity_plus_one }}"}'>
+      +
+    </button>
+    </li>
+    
+  {% endfor %}
+</ul>
+
+
+
+
+
