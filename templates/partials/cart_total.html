@@ -1,6 +1,0 @@
-<p class="text-right mt-3">
-    Total: <span id="cart-total" class="font-weight-bold"
-        hx-post="{% url 'update_cart_htmx' item.id %}"
-        hx-target="#cart-total"
-        hx-swap="outerHTML">${{ total_price }}</span>
-</p>

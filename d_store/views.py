@@ -60,16 +60,10 @@ def view_cart(request):
     }
     return render(request, 'partials/view_cart.html', context)
 
-
 @login_required
 def update_cart_htmx(request, pk):
-    cart_item = get_object_or_404(CartItem, pk=pk)
-
-    # Validar el dato recibido
-    try:
-        quantity = int(request.POST.get('quantity', 0))
-    except ValueError:
-        return HttpResponse("Cantidad no válida", status=400)
+    cart_item = get_object_or_404(CartItem, pk=pk, user=request.user)
+    quantity = int(request.POST.get('quantity', 0))
 
     if quantity < 1:
         cart_item.delete()
@@ -77,24 +71,24 @@ def update_cart_htmx(request, pk):
         cart_item.quantity = quantity
         cart_item.save()
 
-    # Filtrar los artículos del carrito del usuario actual
+    # Obtener los datos actualizados del carrito
     cart_items = CartItem.objects.filter(user=request.user)
     total_price = sum(item.get_total_price() for item in cart_items)
 
-    # Inspeccionar la cabecera de htmx
-    hx_target = request.META.get('HTTP_HX_TARGET', '')
-
-    # Renderizar respuesta según el objetivo de htmx
-    if hx_target == "cart-items":
-        cart_items_html = render_to_string('partials/cart_items_partial.html', {'cart_items': cart_items})
-        return HttpResponse(cart_items_html)
-    elif hx_target == "cart-total":
-        total_html = f"${total_price:.2f}"
-        return HttpResponse(total_html)
-
-    # Respuesta por defecto
-    return HttpResponse(status=204)
+    # Renderizar parciales según el objetivo HTMX
+    cart_items_html = render_to_string('partials/cart_items_partial.html', {'cart_items': cart_items})
     
+    # Solo devolver el nuevo total como HTML
+    total_html = render_to_string('partials/cart_total_partial.html', {'total_price': total_price})
+
+    # Devuelve la respuesta de HTMX para actualizar solo los ítems y el total
+    response = HttpResponse(
+        f"{cart_items_html}<!--HX-RESPONSE-SEPARATOR-->{total_html}"
+    )
+    return response
+
+
+
 @login_required
 def add_to_cart_htmx(request, product_id):
     product = get_object_or_404(Product, id=product_id)

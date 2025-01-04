@@ -25,6 +25,10 @@
     #cart-total {
       font-size: 18px;
     }
+
+    #static-cart {
+      display: none;
+  }
   }
   
 </style>
@@ -39,15 +43,33 @@
                     {% include 'partials/cart_items_partial.html' %}
                 </div>
             </div>
-            <p class="text-right mt-3">
-              Total: <span id="cart-total" class="font-weight-bold">${{ total_price }}</span>
-            </p>
-            <form method="POST" action="{% url 'checkout_htmx' %}" class="text-right mt-3">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-primary">Proceder al Pago</button>
-            </form>
+            <!-- Carrito Estático Oculto -->
+            <div id="static-cart" class="card shadow-sm" style="display: none;">
+                <div class="card-body">
+                    {% include 'partials/cart_items_partial.html' %}
+                </div>
+            </div>
+            <div id="cart-total">
+                {% include 'partials/cart_total_partial.html' %}
+            </div>
         </div>
     </div>
 </div>
 
+
+
+
+
+
+
+
+
 {% endblock %}
+
+
+            {% comment %} 
+              <form method="POST" action="{% url 'checkout_htmx' %}" class="text-right mt-3">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-primary">Proceder al Pago</button>
+              </form> 
+            {% endcomment %}
