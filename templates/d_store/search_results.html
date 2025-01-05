@@ -1,0 +1,13 @@
+<div class="grid-container">
+    {% for product in products %}
+        <div class="grid-item">
+            <a href="{% url 'category_detail' product.category.slug %}">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                <p class="text-muted">{{ product.name }}</p>
+            </a>
+        </div>
+    {% endfor %}
+    {% if not products %}
+        <p class="text-center">No se encontraron resultados.</p>
+    {% endif %}
+</div>

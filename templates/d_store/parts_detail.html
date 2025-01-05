@@ -28,7 +28,7 @@
                     <p class="text-muted">impuestos no incluidos</p>
                 </div>
                 <div>
-                  <button hx-post="{% url 'add_to_cart_htmx' product.id %}" hx-target="#cart-items" hx-swap="outerHTML" hx-headers='{"X-CSRFToken": "{{ csrf_token }}" }'>
+                  <button class="btn btn-success" hx-post="{% url 'add_to_cart_htmx' product.id %}" hx-target="#cart-items" hx-swap="outerHTML" hx-headers='{"X-CSRFToken": "{{ csrf_token }}" }'>
                     Agregar al carrito
                   </button>
                 </div>
@@ -45,7 +45,7 @@
 
 
 <div id="cart-items">
-  {% include 'partials/cart_items.html' %}
+  {% include 'cart/cart_items.html' %}
 </div>
 
 {% endblock content %}

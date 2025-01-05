@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% load humanizelib %}
+
+{% block content %}
+
+<style>
+  #cart-items {
+    margin-bottom: 20px;
+  }
+  
+  #cart-items .card-body {
+    padding: 20px;
+  }
+  
+  #cart-total {
+    font-size: 24px;
+  }
+  
+  @media (max-width: 768px) {
+    #cart-items {
+      margin-bottom: 10px;
+    }
+    #cart-items .card-body {
+      padding: 10px;
+    }
+    #cart-total {
+      font-size: 18px;
+    }
+  }
+  
+</style>
+
+
+
+{% include "components/navbar.html" %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <h2 class="text-center mb-4">Tu Carrito</h2>
+
+      <div id="cart-items" class="card shadow-sm">
+
+        <div class="">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Subtotal</th>
+                <th>Opciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in cart_items %}
+              <tr>
+                <td>{{ item.product.brand }}</td>
+                <td>${{ item.product.price|intcomma }}</td>
+                <td>${{ item.get_total_price|intcomma }}</td>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <!-- Botón de decremento -->
+                    <button class="btn btn-danger btn-sm"
+                      hx-post="{% url 'update_cart_items' item.id %}"
+                      hx-target="#cart-items"
+                      hx-vals='{"quantity": "{{ item.quantity|add:"-1" }}"}'>-</button>
+
+                    <!-- Muestra la cantidad del artículo -->
+                    <span class="mx-2">{{ item.quantity }}</span>
+
+                    <!-- Botón de incremento -->
+                    <button class="btn btn-success btn-sm"
+                      hx-post="{% url 'update_cart_items' item.id %}"
+                      hx-target="#cart-items"
+                      hx-vals='{"quantity": "{{ item.quantity|add:"1" }}"}'>+</button>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+
+
+          </table>
+          <div class="px-5 py-2" id="cart-total" hx-get="{% url 'update_cart_total' %}" hx-trigger="load">
+            <span class="font-weight-bold">Total: ${{ total_price|intcomma }}</span>
+          </div>
+
+        </div>
+
+      </div>
+
+      <form method="POST" action="{% url 'checkout_htmx' %}" class="text-right mt-3">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Proceder al Pago</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+

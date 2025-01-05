@@ -1,0 +1,45 @@
+{% extends "base.html" %} {% block content %} 
+{% include "components/navbar.html" %}
+<section class="container">
+  <div class="pt-5">
+    <div class="row justify-content-center">
+      <div class="search-container">
+        <form 
+        hx-get="{% url 'search_products' %}" 
+        hx-trigger="keyup changed delay:500ms" 
+        hx-target="#products-container" 
+        hx-swap="innerHTML" 
+        class="d-flex justify-content-between align-items-baseline position-relative"
+    >
+        <input 
+            type="text" 
+            name="search_product" 
+            id="search_product" 
+            class="form-control search-input px-5" 
+            placeholder="Buscar productos..."
+        >
+        <i class="fas fa-search search-icon px-2"></i>
+        <!-- Botón de reset -->
+        <i 
+            class="fa-regular fa-circle-xmark fs-4 position-absolute end-0 me-2 mt-2" 
+            onclick="document.getElementById('search_product').value = ''; this.form.submit();">
+        </i>
+    </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-container" id="products-container">
+    {% for category in categories %}
+        <div class="grid-item">
+            <a href="{% url 'category_detail' category.slug %}" hx-boost="true">
+                <img src="{{ category.image.url }}" alt="{{ category.name }}">
+                <p class="text-muted">{{ category.name }}</p>
+            </a>
+        </div>
+    {% endfor %}
+</div>
+
+</section>
+
+{% endblock content %}
