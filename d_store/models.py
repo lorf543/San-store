@@ -4,6 +4,11 @@ from django.utils.text import slugify
 from django.core.exceptions import ValidationError
 import uuid
 from django.contrib.auth.models import User
+from django.conf import settings
+
+
+def get_default_image():
+    return settings.STATIC_ROOT + '/images/default.jpg'
 
 FUEL_CHOICES = [
     ('Gasolina', 'Gasolina'),
@@ -111,16 +116,15 @@ class Product(models.Model):
     def __str__(self):
         return self.brand
     
-    def get_batery_info(self):
-        info = f"{self.brand} {self.volts}  {self.amp}"
-        return info
+    def get_product_info(self):
+        info = self.brand 
+        return info 
     
     
     def get_product_image(self):
-        if self.image is None:
-            return 'https://via.placeholder.com/240x240'
-        else:
-            return self.image.url
+        if not self.image:
+            return settings.MEDIA_URL + 'images/default.jpg'
+        return self.image.url
         
     def save(self, *args, **kwargs):
         if not self.code:
@@ -128,6 +132,9 @@ class Product(models.Model):
             
         if not self.slug:
             self.slug = slugify(f"{self.brand}-{self.price}")
+            
+        if not self.image:
+            self.image = 'images/default.jpg'
         
         self.name = f"{self.brand} - {self.price}"        
         super().save(*args, **kwargs)

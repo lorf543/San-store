@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% include "components/navbar.html" %}
+
+<div class="container d-flex justify-content-center">
+    <div class="d">
+        <img src="{{product.get_product_image}}" alt="">
+    </div>
+    <div class="d"> 
+        <div class="row">
+            <div class="col-3">{{product.brand}}</div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}

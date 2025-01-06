@@ -7,11 +7,18 @@ from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.conf import settings
 from django.core.mail import send_mail
+from django.http import Http404
+from django.core.paginator import Paginator
+
+
+
+from django.db.models import Q
 
 import stripe
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 from .models import Car, UserProfile,Category,Product,CartItem
+from .filters import ProductFilter
 
 
 # Create your views here.
@@ -24,52 +31,70 @@ def home(request):
     return render(request,'d_store/index.html',context)
 
 
-
-def auto_parts(request):
+def category_list(request,):
     categories = get_list_or_404(Category)
+    # products = category.products_parts.all()
     
-    context = {
-        'categories':categories,
-    }
-    return render(request,'d_store/category_parts.html',context)
 
-
-def category_detail(request, slug):
-    category = get_object_or_404(Category, slug=slug)
-    products = category.products_parts.all()
-
-    context = {
-        'category': category,
-        'products': products,
-    }
-    
-    return render(request, 'd_store/parts_detail.html', context)
-
-
-def search_products(request):
-    search_product = request.GET.get('search_product')
-    products = Product.objects.all()
-
-    if search_product:
-        products = products.filter(name__icontains=search_product)
-        context = {
-            'products': products,
-        }
-        return render(request, 'd_store/search_results.html', context)
-
-    # Si no hay búsqueda, renderiza las categorías originales
-    categories = Category.objects.all()
     context = {
         'categories': categories,
     }
-    return render(request, 'd_store/category_parts.html', context)
+    
+    return render(request, 'd_store/category_list.html', context)
+
+
+
+def auto_parts(request, slug):
+    selected_category = get_object_or_404(Category, slug=slug)
+    all_products = selected_category.products_parts.all()
+
+    # Aplicar filtros
+    filtered_products = ProductFilter(request.GET, queryset=all_products.order_by('date_added'))
+
+    # Paginación
+    current_page = request.GET.get('page', 1)
+    try:
+        paginator = Paginator(filtered_products.qs, 5)  # `qs` devuelve los resultados filtrados
+        paginated_products = paginator.page(current_page)
+    except:
+        raise Http404
+
+    context = {
+        'filter': filtered_products,
+        'products': paginated_products,
+    }
+    return render(request, 'd_store/auto_parts.html', context)
+
+
+def search_products(request):
+    search_product = request.POST.get('search_product', "").strip()
+    products = Product.objects.all()
+
+    if search_product:  # Si hay búsqueda
+        products = products.filter(
+            Q(brand__icontains=search_product) | 
+            Q(description__icontains=search_product) |
+            Q(category__name__icontains=search_product)
+        )
+
+    # Renderizar el HTML directamente
+    context = {'products': products}
+    return render(request, 'partials/parts.html', context)
+
+
+def view_part(request, slug):
+    product = get_object_or_404(Product,slug=slug)
+    
+    context ={
+        'product':product
+    }
+    return render(request,'d_store/view_part.html',context)
 
 
 @ensure_csrf_cookie
 @login_required
 def view_cart(request):
     cart_items = request.user.cart_items.all()
-
 
     context = {
         'cart_items': cart_items,

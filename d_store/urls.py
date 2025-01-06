@@ -6,18 +6,23 @@ from django.urls import path
 
 urlpatterns = [
     path('',views.home,name='home'),
-    path('parts/',views.auto_parts,name='auto_parts'),
+    path('category_list', views.category_list, name='category_list'),
+    path('parts/<slug:slug>/',views.auto_parts,name='auto_parts'),
+    path('product/<slug:slug>/',views.view_part,name='view_part'),
+    
+    
+    
     path('cart/', views.view_cart, name='view_cart'),
-    path('auto-parts/<slug:slug>/', views.category_detail, name='category_detail'),
+    
     path('checkout/', views.checkout_htmx, name='checkout_htmx'),
-    path('search/', views.search_products, name='search_products'),
+    path('search-products/', views.search_products, name='search_products'),
     
 ]
 
 
-htmx_urlpatterns = [
-    path('check_info',views.check_info,name='check_info')
-]
+# htmx_urlpatterns = [
+#     path('check_info',views.check_info,name='check_info')
+# ]
 
 
 cart_urlpatterns = [
@@ -29,6 +34,6 @@ cart_urlpatterns = [
 
 urlpatterns += cart_urlpatterns
 
-urlpatterns += htmx_urlpatterns
+# urlpatterns += htmx_urlpatterns
 
 

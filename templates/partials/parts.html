@@ -1,0 +1,36 @@
+{% load static %}
+<div class="grid-container">
+  {% if products %} {% for product in products %}
+  <div class="product-item">
+    <div class="d-flex">
+      <div class="px-2">
+        <img src="{{product.get_product_image}}" alt="{{product.brand}}" />
+      </div>
+
+      <div>
+        <p><strong class="fs-3">{{product.get_batery_info}}</strong></p>
+        <p class="d-none d-lg-block">{{product.description}}</p>
+        <div>
+          <div class="lh">
+            <p class="badge text-dark lh-1">${{product.price}}</p>
+            <p class="text-muted">impuestos no incluidos</p>
+          </div>
+          <div>
+            <button
+              class="btn btn-success"
+              hx-post="{% url 'add_to_cart_htmx' product.id %}"
+              hx-target="#cart-items"
+              hx-swap="outerHTML"
+              hx-headers='{"X-CSRFToken": "{{ csrf_token }}" }'
+            >
+              Agregar al carrito
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %} {% else %}
+  <h4 class="text-warning">No se encontraron productos.</h4>
+  {% endif %}
+</div>
