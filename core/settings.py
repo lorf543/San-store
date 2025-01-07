@@ -151,8 +151,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-STRIPE_PUBLIC_KEY = "tu_public_key"
-STRIPE_SECRET_KEY = "tu_secret_key"
+STRIPE_PUBLIC_KEY = "pk_test_51QZ2ncGTiaYThQ0MfTLP2csTicP9p3lYIOUbddOtomkW1GXGZtfjvMUAuDNyOyYNDPfVwZfHCbolJjj8kG54SOyk00ImqLKIGh"
+STRIPE_SECRET_KEY = "sk_test_51QZ2ncGTiaYThQ0MlElmWPLqhiyls9A1Wzdnua22eRA3fQKDoPfZpt4EBBvnvSzBfv1SuevlRg483vXHwCVy3uo700Mjpe7L9l"
 
 
 

@@ -1,0 +1,53 @@
+<!-- d_store/partials/filtered_products.html -->
+<div class="grid-product">
+    {% for product in products %}
+    <div class="product-item">
+      <div class="d-flex">
+        <a href="{% url 'view_part' product.slug %}" class="px-2">
+          <img src="{{ product.get_product_image }}" alt="{{ product.brand }}" />
+        </a>
+        <div>
+          <p><strong class="fs-3">{{ product.get_product_info }}</strong></p>
+          <p class="d-none d-lg-block">{{ product.description }}</p>
+          <div>
+            <div class="lh">
+              <p class="badge text-dark lh-1">${{ product.price }}</p>
+              <p class="text-muted">impuestos no incluidos</p>
+            </div>
+            <div>
+              <button class="btn btn-success"
+                hx-post="{% url 'add_to_cart_htmx' product.id %}"
+                hx-target="#cart-items"
+                hx-swap="outerHTML"
+                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+                Agregar al carrito
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  
+  <!-- Paginación -->
+  <div class="pagination">
+    {% if products.has_other_pages %}
+    <div class="d-flex justify-content-center">
+      <ul class="pagination">
+        {% if products.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page={{ products.previous_page_number }}" hx-get="?page={{ products.previous_page_number }}" hx-target=".grid-product" hx-swap="outerHTML">Anterior</a></li>
+        {% endif %}
+        {% for page_num in products.paginator.page_range %}
+        <li class="page-item {% if page_num == products.number %}active{% endif %}">
+          <a class="page-link" href="?page={{ page_num }}" hx-get="?page={{ page_num }}" hx-target=".grid-product" hx-swap="outerHTML">{{ page_num }}</a>
+        </li>
+        {% endfor %}
+        {% if products.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ products.next_page_number }}" hx-get="?page={{ products.next_page_number }}" hx-target=".grid-product" hx-swap="outerHTML">Siguiente</a></li>
+        {% endif %}
+      </ul>
+    </div>
+    {% endif %}
+  </div>
+  

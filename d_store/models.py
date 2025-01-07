@@ -117,7 +117,7 @@ class Product(models.Model):
         return self.brand
     
     def get_product_info(self):
-        info = self.brand 
+        info = f"{self.brand } - {self.category.name}"
         return info 
     
     

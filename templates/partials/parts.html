@@ -1,14 +1,17 @@
 {% load static %}
 <div class="grid-container">
-  {% if products %} {% for product in products %}
+  {% if products %} 
+  {% for product in products %}
   <div class="product-item">
     <div class="d-flex">
       <div class="px-2">
-        <img src="{{product.get_product_image}}" alt="{{product.brand}}" />
+        <a href="{% url 'view_part' product.slug %}">
+          <img src="{{ product.get_product_image }}" alt="{{ product.brand }}">
+        </a>
       </div>
 
       <div>
-        <p><strong class="fs-3">{{product.get_batery_info}}</strong></p>
+        <p><strong class="fs-3">{{product.get_product_info}}</strong></p>
         <p class="d-none d-lg-block">{{product.description}}</p>
         <div>
           <div class="lh">

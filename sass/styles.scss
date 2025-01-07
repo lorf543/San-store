@@ -1,0 +1,39 @@
+@import '../node_modules/bootstrap/scss/bootstrap.scss';
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Mansalva&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Jaro:opsz@6..72&family=Mansalva&family=Noto+Sans+KR:wght@100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+@import 'variables';
+@import 'navbar';
+@import 'grid_container';
+@import 'filters-parts';
+@import 'grid-product';
+
+
+html, body {
+    height: 100%; /* Asegúrate de que el html y el body ocupen toda la altura */
+    margin: 0; /* Elimina el margen por defecto */
+}
+
+.container-page {
+    display: flex;
+    flex-direction: column; /* Organiza los elementos en columna */
+    min-height: 100vh; /* Asegura que el contenedor ocupe al menos la altura de la ventana */
+}
+
+main {
+    flex: 1; /* Permite que el main ocupe el espacio restante */
+}
+
+footer {
+    background-color: #333; /* Color de fondo del footer */
+    color: white; /* Color del texto del footer */
+    text-align: center; /* Centra el texto */
+    padding: 10px; /* Espaciado interno */
+}
+
+
+.lh{
+    line-height: 00px;
+}
+
+

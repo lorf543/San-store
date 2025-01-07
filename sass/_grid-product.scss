@@ -1,0 +1,87 @@
+
+.grid-product {
+    width: 100%;
+    padding-top: 8px;
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 10px;
+
+}
+
+.product-filters{
+    border-right: 4px solid rgba(0, 0, 0, 0.482);
+    margin-right: 62px;
+    margin-top: 25px;
+    width: 50%;
+}
+
+
+.product-item {
+    background-color: #f1f1f1;
+    transition: transform 0.3s ease;
+    width: 100%;
+    cursor: pointer;
+    padding: 10px;
+    
+
+    .product-layout {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &:hover {
+        transform: scale(1.05); /* Aumentar el tamaño al 105% */
+    }
+
+    img {
+        width: 200px; /* Ajusta el ancho según tus necesidades */
+        height: 200px; /* Ajusta el alto según tus necesidades */
+        object-fit: cover; /* Asegura que la imagen se ajuste al tamaño establecido */
+    }
+
+    .product-description {
+        height: 150px; /* Ajusta el alto según tus necesidades */
+        overflow: hidden; /* Oculta cualquier contenido que sobrepase el tamaño establecido */
+    }
+}
+
+
+.grid-related {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Columnas dinámicas */
+    gap: 20px; /* Espacio entre productos */
+}
+
+  /* Para pantallas pequeñas (2 columnas) */
+@media (max-width: 768px) {
+    .grid-related {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* Para pantallas grandes (hasta 5 columnas) */
+@media (min-width: 769px) {
+    .grid-related {
+      grid-template-columns: repeat(5, 1fr);
+    }
+  }
+
+@media (max-width: 768px) {
+    .grid-container {
+        grid-template-columns: 1fr;
+
+    }
+
+    .product-item {
+        img{
+            width: 125px;
+            height: 125px;
+            object-fit: cover; /* Asegura que la imagen se ajuste al tamaño establecido */
+        }
+    }
+
+    .product-filters{
+        border: 0;
+    }
+}

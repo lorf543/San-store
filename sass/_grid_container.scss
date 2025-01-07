@@ -1,0 +1,55 @@
+.grid-container {
+    padding-top: 8px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.grid-item {
+    background-color: #f1f1f1;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid #ccc;
+    transition: transform 0.3s ease; /* Añadir transición para suavizar el efecto */
+
+    
+    img {
+        width: 60%; /* Asegura que la imagen ocupe todo el ancho del contenedor */
+        height: 240px; /* Establece una altura fija para las imágenes */
+        object-fit: cover; /* Mantiene la proporción de la imagen y recorta si es necesario */
+    }
+
+    &:hover {
+        transform: scale(1.05); /* Aumentar el tamaño al 105% */
+    }
+
+
+}
+
+@media (max-width: 768px) {
+    .grid-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+
+.search-container {
+    position: relative;
+}
+
+.search-input {
+    height: 50px;
+    border-radius: 30px;
+    padding-left: 35px;
+    border: none;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.search-icon {
+    position: absolute;
+    top: 50%;
+    left: 15px;
+    transform: translateY(-50%);
+    color: #888;
+}

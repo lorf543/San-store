@@ -13586,6 +13586,24 @@ a {
   overflow: hidden; /* Oculta cualquier contenido que sobrepase el tamaño establecido */
 }
 
+.grid-related {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Columnas dinámicas */
+  gap: 20px; /* Espacio entre productos */
+}
+
+/* Para pantallas pequeñas (2 columnas) */
+@media (max-width: 768px) {
+  .grid-related {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+/* Para pantallas grandes (hasta 5 columnas) */
+@media (min-width: 769px) {
+  .grid-related {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
 @media (max-width: 768px) {
   .grid-container {
     grid-template-columns: 1fr;

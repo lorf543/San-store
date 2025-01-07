@@ -48,13 +48,15 @@ def auto_parts(request, slug):
     selected_category = get_object_or_404(Category, slug=slug)
     all_products = selected_category.products_parts.all()
 
-    # Aplicar filtros
-    filtered_products = ProductFilter(request.GET, queryset=all_products.order_by('date_added'))
+    # Aplicar filtros con la categoría seleccionada
+    filtered_products = ProductFilter(
+        request.GET, queryset=all_products.order_by('date_added'), category=selected_category
+    )
 
     # Paginación
     current_page = request.GET.get('page', 1)
     try:
-        paginator = Paginator(filtered_products.qs, 5)  # `qs` devuelve los resultados filtrados
+        paginator = Paginator(filtered_products.qs, 5)
         paginated_products = paginator.page(current_page)
     except:
         raise Http404
@@ -83,12 +85,18 @@ def search_products(request):
 
 
 def view_part(request, slug):
-    product = get_object_or_404(Product,slug=slug)
-    
-    context ={
-        'product':product
+    product = get_object_or_404(Product, slug=slug)
+
+    # Obtener productos relacionados (misma categoría, excluyendo el producto actual)
+    related_products = Product.objects.filter(
+        Q(category=product.category) & ~Q(id=product.id)
+    ).order_by('-date_added')[:5]  # Limitar a los 5 más recientes
+
+    context = {
+        'product': product,
+        'related_products': related_products,
     }
-    return render(request,'d_store/view_part.html',context)
+    return render(request, 'd_store/view_part.html', context)
 
 
 @ensure_csrf_cookie
