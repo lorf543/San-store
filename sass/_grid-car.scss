@@ -1,0 +1,95 @@
+.grid-card {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 10px;
+
+    .car-card {
+
+        transition: transform 0.3s ease;
+        width: 350px;
+        height: auto;
+        box-shadow: 0px 0px 21px -11px rgba(66, 68, 90, 1);
+        cursor: pointer;
+
+        &:hover {
+            transform: scale(1.05);
+            /* Aumentar el tamaño al 105% */
+        }
+    }
+
+    img {
+        object-fit: contain;
+    }
+    .car-info {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-top: 5px;
+
+        div {
+            line-height: 10px;
+        }
+    }
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.car-filters {
+    display: flex;
+    justify-content: space-around;
+
+    .filtros {
+
+        @media (max-width: 768px) {
+            display: none;
+        }
+    }
+}
+
+
+
+
+// style=" background-image: url({{ image.image.url }});"
+
+.carousel-container{
+    width: 50%;
+    
+    @media (max-width: 768px) {
+        width: 100%;
+    }
+}
+
+
+
+.car-details {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-column-gap: 10px;
+    grid-row-gap: 10px;
+    height: 250px;
+    padding: 5px;
+    
+
+
+
+    @media (max-width: 768px) {
+
+        div{
+            padding-top: 10px;
+        }
+    }
+}
+
+
+.danger-info{
+    line-height: 5px;
+    padding-top: 13px;
+    small{
+        color: red;
+        font-weight: 700;
+    }
+}

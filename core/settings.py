@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-@by&0^$6j$&_v&xp7agn=8j&8le_*s0_ga$7xaac#s+41^p7*t
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['8837-148-103-52-199.ngrok-free.app','127.0.0.1']
 
 
 # Application definition
@@ -53,7 +53,9 @@ INSTALLED_APPS = [
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
-    
+
+CORS_ALLOWED_ALL_ORIGINS = True
+CSRF_TRUSTED_ORIGINS = ["https://8837-148-103-52-199.ngrok-free.app"]
 
 
 
@@ -80,7 +82,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'd_store.context_processors.cart_item_count'
+                'd_store.context_processors.cart_info'
             ],
         },
     },
@@ -151,8 +153,14 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-STRIPE_PUBLIC_KEY = "pk_test_51QZ2ncGTiaYThQ0MfTLP2csTicP9p3lYIOUbddOtomkW1GXGZtfjvMUAuDNyOyYNDPfVwZfHCbolJjj8kG54SOyk00ImqLKIGh"
-STRIPE_SECRET_KEY = "sk_test_51QZ2ncGTiaYThQ0MlElmWPLqhiyls9A1Wzdnua22eRA3fQKDoPfZpt4EBBvnvSzBfv1SuevlRg483vXHwCVy3uo700Mjpe7L9l"
+
+
+if DEBUG:
+    STRIPE_PUBLIC_KEY = "pk_test_51QgXQVLLmaNJQ2vmPGMku7Ig9X91Dytv5DDsRr46zTQR3u6Ev1JP91tBO8w04gR5lnWvnoODLTn2fhvfsd9FEIMv004tIfBLJZ"
+    STRIPE_SECRET_KEY = "sk_test_51QgXQVLLmaNJQ2vmIbrOeqs78hl58Ek2Galr4XiuqTVM9tC687qX9Pauanygc95KhUn8PH1yuorhgphaXuIIlKFR00GugJaQeF"
+    STRIPE_ENDPOINT_SECRET = 'whsec_JVe9csJtlf7uBf8vEoufQkW9JoBzbVSi'
+
+
 
 
 

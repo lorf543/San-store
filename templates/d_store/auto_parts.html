@@ -44,7 +44,7 @@
     <!-- Listado de productos -->
     <div class="grid-product">
       {% for product in products %}
-      <d class="product-item">
+      <div class="product-item">  
         <div class="d-flex">
           <a href="{% url 'view_part' product.slug %}" class="px-2">
             <img src="{{ product.get_product_image }}" alt="{{ product.brand }}" />
@@ -61,42 +61,55 @@
               </div>
               <div>
                 {% if user.is_authenticated %}
-                <button class="btn btn-success" hx-post="{% url 'add_to_cart_htmx' product.id %}" hx-target="#cart-items" hx-swap="outerHTML" hx-headers='{"X-CSRFToken": "{{ csrf_token }}" }'>
-                  Agregar al carrito
-                </button>
-
+                  <div id="button-{{ product.id }}">
+                    {% if product.id in in_cart %}
+                      <!-- Producto ya está en el carrito -->
+                      <button class="btn btn-danger" disabled>
+                        En el carrito
+                      </button>
+                    {% else %}
+                      <!-- Producto no está en el carrito -->
+                      <button class="btn btn-success"
+                              hx-post="{% url 'add_to_cart_btn' product.id %}"
+                              hx-target="#button-{{ product.id }}"
+                              hx-swap="outerHTML"
+                              hx-headers='{"X-CSRFToken": "{{ csrf_token }}" }'>
+                        Agregar al carrito
+                      </button>
+                    {% endif %}
+                  </div>
                 {% else %}
-                <p class="text-danger">Crea una cuenta para poder comprar</p>
+                  <p class="text-danger">Crea una cuenta para poder comprar</p>
                 {% endif %}
               </div>
             </div>
           </div>
         </div>
-      </d>
+      </div>
       {% endfor %}
     </div>
   </div>
 
-  <!-- Paginación -->
-  <div class="pagination">
-    {% if products.has_other_pages %}
-    <div class="d-flex justify-content-center">
-      <ul class="pagination">
-        {% if products.has_previous %}
-        <li class="page-item"><a class="page-link" href="?page={{ products.previous_page_number }}" hx-boost="true">Anterior</a></li>
-        {% endif %}
-        {% for page_num in products.paginator.page_range %}
-        <li class="page-item {% if page_num == products.number %}active{% endif %}">
-          <a class="page-link" href="?page={{ page_num }}" hx-boost="true">{{ page_num }}</a>
-        </li>
-        {% endfor %}
-        {% if products.has_next %}
-        <li class="page-item"><a class="page-link" href="?page={{ products.next_page_number }}" hx-boost="true">Siguiente</a></li>
-        {% endif %}
-      </ul>
+    <!-- Paginación -->
+    <div class="pagination">
+      {% if products.has_other_pages %}
+      <div class="d-flex justify-content-center">
+        <ul class="pagination">
+          {% if products.has_previous %}
+          <li class="page-item"><a class="page-link" href="?page={{ products.previous_page_number }}" hx-boost="true">Anterior</a></li>
+          {% endif %}
+          {% for page_num in products.paginator.page_range %}
+          <li class="page-item {% if page_num == products.number %}active{% endif %}">
+            <a class="page-link" href="?page={{ page_num }}" hx-boost="true">{{ page_num }}</a>
+          </li>
+          {% endfor %}
+          {% if products.has_next %}
+          <li class="page-item"><a class="page-link" href="?page={{ products.next_page_number }}" hx-boost="true">Siguiente</a></li>
+          {% endif %}
+        </ul>
+      </div>
+      {% endif %}
     </div>
-    {% endif %}
-  </div>
 
 </div>
 

@@ -1,0 +1,13 @@
+{% if in_cart %}
+<button class="btn btn-danger" disabled>
+  En el carrito
+</button>
+{% else %}
+<button class="btn btn-success"
+        hx-post="{% url 'add_to_cart_htmx' product.id %}"
+        hx-target="#button-{{ product.id }}"
+        hx-swap="outerHTML"
+        hx-headers='{"X-CSRFToken": "{{ csrf_token }}" }'>
+  Agregar al carrito
+</button>
+{% endif %}

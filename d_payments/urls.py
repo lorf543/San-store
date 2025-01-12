@@ -1,12 +1,24 @@
 from django.urls import path
 from . import views
 
+
 urlpatterns = [
-    # path('stripe-webhook/', views.stripe_webhook, name='stripe-webhook'),
-    # path('success-payment/',views.success_payment,name='success_payment'),
-    # path('cencel-payment/',views.cencel_payment,name='cencel_payment'),
-    # path('add-to-cart/<int:product_id>/', views.add_to_cart, name='add_to_cart'),
-    # path('view-cart/',views.view_cart,name='view_cart'),    
-    # path('update-cart/<int:cart_item_id>',views.update_cart,name='update_cart'),    
-    # path('remove-from-cart/<int:cart_item_id>',views.remove_from_cart,name='remove_from_cart'),    
+    path('stripe/webhook/', views.stripe_webhook, name="stripe_webhook"),
 ]
+
+
+checkout_urlpatterns = [
+    path('checkout/', views.checkout_htmx, name='checkout_htmx'),
+    path('checkout/success/', views.payment_success, name='payment_success'),
+    path('checkout/cancel/', views.payment_cancel, name='payment_cancel'),
+    
+]
+
+cart_urlpatterns = [
+    path('cart/', views.view_cart, name='view_cart'),
+    path('cart/add/<int:product_id>/', views.add_to_cart_htmx, name='add_to_cart_htmx'),
+    path('update_cart/<pk>/', views.update_cart_items, name='update_cart_items'),
+    path('update-cart-total/', views.update_cart_total, name='update_cart_total'),
+]
+
+urlpatterns = checkout_urlpatterns + cart_urlpatterns

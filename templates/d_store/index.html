@@ -1,8 +1,89 @@
 {% extends "base.html" %}
+{% load humanizelib %}
 
 
 {% block content %}
 {% include "components/navbar.html" %}
 {% include "components/header.html" %}
+
+<section class="container car-filters">
+    <div class="filtros pt-5">
+        aqui van los
+    </div>
+
+    <div class="grid-card pt-5">
+        {% for car in cars %}
+            <a class="car-card" href="{% url 'car_view' car.slug %}" hx-boost="true" >
+                <div>
+                    {% for image in car.product_imange.all %}
+                        {% if image.main %}
+                            <img  loading="lazy" class="img-fluid" src="{{ image.image.url }}" alt="">
+                        {% endif %}
+                    {% endfor %}
+                </div>
+    
+                <div class="car-info">            
+                    <div>
+                        <p>{{car.brand}} {{car.model}}</p>
+                        <p>${{car.price|intcomma}}</p>
+                    </div>
+                    <p class="text-warning fw-bolder">{{car.year}}</p>
+                </div>
+            </a>
+            <a class="car-card" href="{% url 'car_view' car.slug %}" hx-boost="true" >
+                <div>
+                    {% for image in car.product_imange.all %}
+                        {% if image.main %}
+                            <img class="img-fluid" src="{{ image.image.url }}" alt="">
+                        {% endif %}
+                    {% endfor %}
+                </div>
+    
+                <div class="car-info">            
+                    <div>
+                        <p>{{car.brand}} {{car.model}}</p>
+                        <p>${{car.price|intcomma}}</p>
+                    </div>
+                    <p class="text-warning fw-bolder">{{car.year}}</p>
+                </div>
+            </a>
+            <a class="car-card" href="{% url 'car_view' car.slug %}" hx-boost="true" >
+                <div>
+                    {% for image in car.product_imange.all %}
+                        {% if image.main %}
+                            <img loading="lazy" class="img-fluid" src="{{ image.image.url }}" alt="">
+                        {% endif %}
+                    {% endfor %}
+                </div>
+    
+                <div class="car-info">            
+                    <div>
+                        <p>{{car.brand}} {{car.model}}</p>
+                        <p>${{car.price|intcomma}}</p>
+                    </div>
+                    <p class="text-warning fw-bolder">{{car.year}}</p>
+                </div>
+            </a>
+            <a class="car-card" href="{% url 'car_view' car.slug %}" hx-boost="true" >
+                <div>
+                    {% for image in car.product_imange.all %}
+                        {% if image.main %}
+                            <img class="img-fluid" src="{{ image.image.url }}" alt="">
+                        {% endif %}
+                    {% endfor %}
+                </div>
+    
+                <div class="car-info">            
+                    <div>
+                        <p>{{car.brand}} {{car.model}}</p>
+                        <p>${{car.price|intcomma}}</p>
+                    </div>
+                    <p class="text-warning fw-bolder">{{car.year}}</p>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+
+</section>
 
 {% endblock content %}

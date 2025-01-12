@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% load humanizelib %}
+
+{% block content %}
+{% include "components/navbar.html" %}
+
+<section class='container pb-5 pt-3 d-sm-flex d-lg-flex gap-3'>
+
+{% comment %} Sass file_grid-car.scss {% endcomment %}
+  <div class="carousel-container">
+    <div id="carouselExample" class="carousel slide">
+      <div class="carousel-inner">
+        {% for image in car.product_imange.all %}
+        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+          <div class="image-car" >
+            <img  loading="lazy" src="{{ image.image.url }}" alt="{{car.brand}}"> 
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+  </div>
+      
+
+  <div>
+
+    <div class="car-details">
+
+      <div> 
+        <p>Marca: </p> 
+        <p>Modelo: </p>   
+        <p>Año: </p>   
+        <p>Color Ext: </p>
+        <p>Color Int: </p>
+        <p>Motor: </p>
+      </div>  
+  
+      <div>
+        <p class="fw-bolder">{{car.brand}}</p>
+        <p class="fw-bolder">{{car.model}}</p>
+        <p class="fw-bolder">{{car.year}}</p>
+        <p class="fw-bolder">{{car.color}}</p>
+        <p class="fw-bolder">{{car.color}}</p>
+        <p class="fw-bolder">{{car.engine}}</p>
+      </div>
+  
+      <div>
+  
+        <p>Transmision: </p>
+        <p>Combustible: </p>
+        <p>Kilometraje: </p>
+        <p>Condicion: </p>
+        <p>Version: </p>
+      </div>
+  
+      <div>
+  
+        <p class="fw-bolder">{{car.transmission}}</p>
+        <p class="fw-bolder">{{car.fuel}}</p>
+        <p class="fw-bolder">{{car.km}} Millas</p>
+        <p class="fw-bolder">Excelente</p>
+        <p class="fw-bolder">Ameriana</p>
+      </div>
+  
+    </div>
+  <hr>
+  <div class="price-info">
+    <p class="fs-4">{{car.brand}} {{car.model}} {{car.year}}</p>
+    <p id="car-price" class="h2">${{car.price|intcomma}}</p>
+    <form>
+
+      <div class="row py-3">
+        <div class="col-6">
+          <label for="months" class="form-label">Número de meses:</label>
+          <input type="number" id="months" value="48" class="form-control">
+        </div>
+        <div class="col-6">
+          <label for="initial-payment" class="form-label">Pago inicial:</label>
+          <input type="number" id="initial-payment" value="200000" class="form-control">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-3">      
+          <button type="button" id="calculate-payment" class="btn btn-primary">Calcular</button>
+        </div>
+        <div class="col-4">
+          <button type="button"  class="btn btn-success">Lo quiero</button>
+        </div>
+      </div>
+
+    </form>
+      <div class="danger-info">
+        <p id="estimated-payment" class="fs-4">Estimado mensual: $0.00</p>
+        <small class="">No incluye interes/seguro</small>
+      </div>
+  </div>
+
+  </div>
+
+
+</section>
+
+
+
+<script>
+// Variables del DOM
+const monthsInput = document.getElementById("months");
+const calculateButton = document.getElementById("calculate-payment");
+const estimatedPaymentOutput = document.getElementById("estimated-payment");
+const initialPayment = document.getElementById("initial-payment");
+
+// Función para calcular el pago mensual sin intereses
+function calculateMonthlyPayment(carPriceValue, monthsValue, initialPaymentValue) {
+  return (carPriceValue - initialPaymentValue) / monthsValue;
+}
+
+// Formatea el precio del carro
+const carPriceText = document.getElementById("car-price").textContent;
+const carPriceValue = parseFloat(carPriceText.replace("$", "").replace(",", ""));
+const defaultMonthsValue = parseInt(monthsInput.value);
+const defaultInitialPaymentValue = parseFloat(initialPayment.value);
+
+// Calcula y muestra el pago mensual inicial (sin intereses)
+const initialMonthlyPayment = calculateMonthlyPayment(carPriceValue, defaultMonthsValue, defaultInitialPaymentValue);
+const formattedInitialMonthlyPayment = initialMonthlyPayment.toLocaleString("en-US", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+estimatedPaymentOutput.textContent = `Estimado mensual: ${formattedInitialMonthlyPayment}`;
+
+// Evento para recalcular el pago mensual cuando se haga clic en el botón
+calculateButton.addEventListener("click", () => {
+  const monthsValue = parseInt(monthsInput.value);
+  const initialPaymentValue = parseFloat(initialPayment.value);
+
+  const monthlyPayment = calculateMonthlyPayment(carPriceValue, monthsValue, initialPaymentValue);
+  const formattedMonthlyPayment = monthlyPayment.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  estimatedPaymentOutput.textContent = `Estimado mensual: ${formattedMonthlyPayment}`;
+});
+</script>
+
+
+
+
+
+{% endblock content %}
+
+
+

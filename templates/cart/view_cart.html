@@ -73,11 +73,13 @@
                       hx-target="#cart-items"
                       hx-vals='{"quantity": "{{ item.quantity|add:"1" }}"}'>+</button>
                   </div>
+
                 </td>
+
+
               </tr>
               {% endfor %}
             </tbody>
-
 
           </table>
           <div class="px-5 py-2" id="cart-total" hx-get="{% url 'update_cart_total' %}" hx-trigger="load">
@@ -88,10 +90,14 @@
 
       </div>
 
-      <form method="POST" action="{% url 'checkout_htmx' %}" class="text-right mt-3">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-primary">Proceder al Pago</button>
-      </form>
+      {% if cart_items %}
+        <form method="POST" action="{% url 'checkout_htmx' %}" class="text-right mt-3">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-primary">Proceder al Pago</button>
+        </form>
+      {% else %}
+      <p class="text-center pt-4">no tienes nada agreado al carrito</p>
+      {% endif %}
     </div>
   </div>
 </div>

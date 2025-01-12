@@ -4,57 +4,16 @@ from django.conf import settings
 from django.shortcuts import render,redirect, get_object_or_404,HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from d_store.models import Product
-from .models import Cart,Invoice
+
+from .models import Invoice
+from d_store.models import CartItem
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
-def create_checkout_session(request):
-    # Verificar que el usuario tiene productos en el carrito
-    cart_items = Cart.objects.filter(user=request.user)
-    if not cart_items.exists():
-        return redirect('cart')  # Redirigir si el carrito está vacío
-
-    # Crear una lista de ítems para Stripe
-    line_items = [
-        {
-            'price_data': {
-                'currency': 'dop',
-                'product_data': {
-                    'name': item.product.name,
-                    'images': [item.product.image.url],  # Usar directamente la URL de la imagen
-                },
-                'unit_amount': int(item.product.price * 100),  # Stripe usa centavos
-            },
-            'quantity': item.quantity,
-        }
-        for item in cart_items
-    ]
-
-    # Crear la sesión de Stripe
-    try:
-        session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            line_items=line_items,
-            mode='payment',
-            success_url=request.build_absolute_uri(reverse('success_payment')),
-            cancel_url=request.build_absolute_uri(reverse('cancel_payment')),
-            metadata={'user_id': request.user.id},  # Agregar el ID del usuario
-        )
-        return redirect(session.url, code=303)  # Redirigir al usuario al checkout de Stripe
-    except stripe.error.StripeError as e:
-        return JsonResponse({'error': f'Error al crear la sesión de pago: {str(e)}'}, status=400)
-
-@login_required
-def success_payment(request):
-    Cart.objects.filter(user=request.user).delete()  # Vaciar el carrito
-    return HttpResponse('Pago realizado con éxito')
-
-@login_required
-def cencel_payment(request):
-    return HttpResponse('pago cancelado')
 
 
 
@@ -82,69 +41,136 @@ def stripe_webhook(request):
     return JsonResponse({'status': 'success'})
 
 def handle_successful_payment(session):
-    # Obtener el ID del usuario desde metadata (puedes personalizar esto)
-    user_id = session['metadata']['user_id']
+    print("esta funcion se esta ejecutando")
+    user_id = session['metadata'].get('user_id')
+    if not user_id:
+        print("Error: User ID is missing in session metadata")
+        return
 
-    # Crear una factura
-    Invoice.objects.create(
-        user_id=user_id,
-        stripe_invoice_id=session.get('payment_intent'),
-        total_amount=session['amount_total'] / 100,
-        currency=session['currency'],
-        status='paid',
+    try:
+        # Crear una factura
+        invoice = Invoice.objects.create(
+            user_id=user_id,
+            stripe_invoice_id=session.get('payment_intent'),
+            total_amount=session['amount_total'] / 100,
+            currency=session['currency'],
+            status='paid',
+        )
+        print(f"Invoice {invoice.id} created successfully.")
+    except Exception as e:
+        print(f"Error creating invoice: {e}")
+        return
+
+    # Reducir stock y vaciar carrito
+    try:
+        cart_items = CartItem.objects.filter(user_id=user_id)
+        for item in cart_items:
+            product = item.product
+            if product.stock >= item.quantity:
+                product.stock -= item.quantity
+                product.save()
+            else:
+                print(f"Insufficient stock for {product.brand}")
+        cart_items.delete()
+    except Exception as e:
+        print(f"Error processing cart items: {e}")
+    
+    
+@login_required
+def checkout_htmx(request):
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    cart_items = request.user.cart_items.all()
+    total_price = sum(item.get_total_price() for item in cart_items)
+
+    # Crear sesión de Stripe
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=[
+            {
+                'price_data': {
+                    'currency': 'dop',
+                    'product_data': {'name': item.product.brand},
+                    'unit_amount': int(item.product.price * 100),
+                },
+                'quantity': item.quantity,
+            }
+            for item in cart_items
+        ],
+        mode='payment',
+        success_url=request.build_absolute_uri(reverse('payment_success')),
+        cancel_url=request.build_absolute_uri(reverse('payment_cancel')),
     )
+    return redirect(session.url, code=303)
+    
+@login_required
+def payment_success(request):
+    return render(request, 'd_payments/payment_success.html')
 
-    # Reducir el stock de los productos comprados
-    cart_items = Cart.objects.filter(user_id=user_id)
-    for item in cart_items:
-        product = item.product
-        if product.stock >= item.quantity:
-            product.stock -= item.quantity
-            product.save()
-        else:
-            # Manejar caso de stock insuficiente si es necesario
-            print(f"Stock insuficiente para {product.name}")
+@login_required
+def payment_cancel(request):
+    return render(request, 'd_payments/payment_cancel.html')    
+    
+    
+@ensure_csrf_cookie
+@login_required
+def view_cart(request):
+    cart_items = request.user.cart_items.all()
 
-    # Vaciar el carrito después de la compra
-    cart_items.delete()
+    context = {
+        'cart_items': cart_items,
+    }
+    return render(request, 'cart/view_cart.html', context)
 
-def add_to_cart(request, product_id):
-    if request.method == "POST":
-        product = get_object_or_404(Product, id=product_id)
-        cart_item, created = Cart.objects.get_or_create(user=request.user, product=product)
-        if not created:
-            cart_item.quantity += 1
+
+@login_required
+def update_cart_items(request, pk):
+    cart_item = get_object_or_404(CartItem, pk=pk, user=request.user)
+    quantity = int(request.POST.get('quantity', 0))
+
+    if quantity < 1:
+        cart_item.delete()
+    else:
+        cart_item.quantity = quantity
         cart_item.save()
 
-        # Renderizar el fragmento actualizado
-        return render(request, 'cart/cart_item_partial.html', {'cart_item': cart_item})
-    return JsonResponse({'error': 'Método no permitido'}, status=405)
+    # Obtener todos los artículos actualizados en el carrito
+    cart_items = CartItem.objects.filter(user=request.user)
 
-def view_cart(request):
-    # Obtener los productos en el carrito del usuario
-    cart_items = Cart.objects.filter(user=request.user)
+    # Calcular el precio total del carrito
+    total_price = sum(item.get_total_price() for item in cart_items)
+    print(total_price)
 
-    # Calcular el total del carrito
-    total_amount = sum(item.product.price * item.quantity for item in cart_items)
-
-    return render(request, 'cart/view_cart.html', {
+    # Retornar solo los artículos actualizados y el total (renderizar solo la parte del carrito y el total)
+    context = {
         'cart_items': cart_items,
-        'total_amount': total_amount
-    })
-    
+        'total_price': total_price,
+    }
+
+    return render(request, 'cart/cart_items_and_total.html', context)
 
 
-def update_cart(request, cart_item_id):
-    if request.method == 'POST':
-        cart_item = get_object_or_404(Cart, id=cart_item_id, user=request.user)
-        quantity = int(request.POST.get('quantity', 1))
-        if quantity > 0:
-            cart_item.quantity = quantity
-            cart_item.save()
-    return redirect('view_cart')
+@login_required
+def update_cart_total(request):
+    cart_items = CartItem.objects.filter(user=request.user)
+    total_price = sum(item.get_total_price() for item in cart_items)
 
-def remove_from_cart(request, cart_item_id):
-    cart_item = get_object_or_404(Cart, id=cart_item_id, user=request.user)
-    cart_item.delete()
-    return redirect('view_cart')
+
+    context = {
+        'total_price': total_price,
+    }
+
+    return render(request, 'cart/cart_total.html', context)
+
+
+@login_required
+def add_to_cart_htmx(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product)
+    if not created:
+        cart_item.quantity += 1
+        cart_item.save()
+
+    # Retorna una respuesta sin contenido
+    return HttpResponse(status=204)
+
 

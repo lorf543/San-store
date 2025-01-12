@@ -19,21 +19,29 @@
             <p class="text-muted">impuestos no incluidos</p>
           </div>
           <div>
+
+
+            {{product}}
+
             <button
-              class="btn btn-success"
+
+              class="btn {% if request.session.in_cart %}btn-danger{% else %}btn-success{% endif %}"
               hx-post="{% url 'add_to_cart_htmx' product.id %}"
-              hx-target="#cart-items"
-              hx-swap="outerHTML"
               hx-headers='{"X-CSRFToken": "{{ csrf_token }}" }'
-            >
+              hx-trigger="click"
+              hx-target="this"
+              >
               Agregar al carrito
-            </button>
+            </button> 
+            
           </div>
         </div>
       </div>
     </div>
   </div>
-  {% endfor %} {% else %}
+  {% endfor %} 
+  
+  {% else %}
   <h4 class="text-warning">No se encontraron productos.</h4>
   {% endif %}
 </div>

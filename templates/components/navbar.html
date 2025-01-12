@@ -37,7 +37,7 @@
                 <ul class="navbar-nav ms-auto">
 
                     <li class="nav-item">
-                        <a class="nav-link p-c mt-2" href=" #">My Account</a>
+                        <a class="nav-link p-c mt-2" href="{% url 'my_account' %}">My Account</a>
                     </li>
                     {% if user.is_authenticated %}
                         <li class="nav-item position-relative">
